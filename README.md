@@ -73,8 +73,25 @@ if __name__ == "__main__":
 # Step 3: SQL Practice
 Compared to the earlier steps, the SQL portion was more straightforward. That said, it still offered valuable learning opportunities.
 
-In the past, I had only taken online SQL courses and practiced using pre-built datasets. This was the first time I built a dataset from scratch and manipulated it on my own. Through this project, I enhanced my skills in creating tables, modifying structures, and writing more practical, real-world SQL queries.
+In the past, I had only taken online SQL courses and practiced using pre-built datasets. This was the first time I built a dataset from scratch and manipulated it on my own. Through this project, I enhanced my skills in creating tables, modifying structures. Since the data is in string format, I also improved my SQL syntax related to strings—for example, RIGHT(), POSITION(), CHAR_LENGTH(), etc.
 
+## create dataset and tables
+```sql
+CREATE DATABASE IF NOT EXISTS dict_edit;
+USE dict_edit;
+CREATE TABLE IF NOT EXISTS no_html (
+    word VARCHAR(255),
+    definition TEXT
+);
+CREATE TABLE IF NOT EXISTS BEC_2_outputv2 (
+    word VARCHAR(255),
+    pronounciation VARCHAR(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci, 
+    phrase TEXT, 
+    translation_cn TEXT
+);
+RENAME TABLE BEC_2_outputv2 TO bec_2_outputv3;
+```
+## Manipulate data
 ```sql
 
 with pt_en_pt as(
@@ -84,9 +101,10 @@ left(definition, position('.' in definition)) as en_word,
 right(definition, char_length(definition)-position('.' in definition)) as pt_definition
 from dict_edit.no_html)
 
-SELECT pt.en_word, pt.pt_definition,en.phrase, en.translation_cn
+SELECT concat(pt.en_word, ' ', en.phrase) as en_side, concat(pt.pt_definition, ' ',en.translation_cn) as pt_side
 FROM pt_en_pt as pt
 left join dict_edit.bec_2_outputv3 as en
 on en.word = pt.new_word
-where en.word is not null;
+where concat(pt.en_word, ' ', en.phrase) is not null;
+
 ```
